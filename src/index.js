@@ -3,18 +3,20 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import {
+  Navigate,
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 import LoginPage from './routes/LoginPage';
 import RegisterPage from './routes/RegisterPage';
 import Root from './routes/Root';
+import RegistroHorario from './routes/RegistroHorario';
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Root />,
-    children: [
+    children: [{ index: true, element: <Navigate to="/login" replace /> },
       {
         path: "register",
         element: <RegisterPage />,
@@ -23,6 +25,10 @@ const router = createBrowserRouter([
         path: "login",
         element: <LoginPage />,
       },
+      {
+        path:"registrar",
+        element: <RegistroHorario/>
+      }
     ],
   },
 ]);
