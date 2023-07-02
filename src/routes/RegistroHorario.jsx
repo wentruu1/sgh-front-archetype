@@ -3,80 +3,21 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const RegistrarHorario = () => {
-  const [selectedDay, setSelectedDay] = useState("");
+  const [selectedDay, setSelectedDay] = useState(null);
   const [selectedHorario, setSelectedHorario] = useState("");
-  const [cuposDisponibles, setCuposDisponibles] = useState({
-    Lunes: {
-      "08:15": 30,
-      "09:25": 30,
-      "10:35": 30,
-      "11:45": 30,
-      "12:55": 30,
-      "14:05": 30,
-      "15:15": 30,
-      "16:25": 30,
-      "17:35": 30,
-      "18:45": 30,
-    },
-    Martes: {
-      "08:15": 30,
-      "09:25": 30,
-      "10:35": 30,
-      "11:45": 30,
-      "12:55": 30,
-      "14:05": 30,
-      "15:15": 30,
-      "16:25": 30,
-      "17:35": 30,
-      "18:45": 30,
-    },
-    Miércoles: {
-      "08:15": 30,
-      "09:25": 30,
-      "10:35": 30,
-      "11:45": 30,
-      "12:55": 30,
-      "14:05": 30,
-      "15:15": 30,
-      "16:25": 30,
-      "17:35": 30,
-      "18:45": 30,
-    },
-    Jueves: {
-      "08:15": 30,
-      "09:25": 30,
-      "10:35": 30,
-      "11:45": 30,
-      "12:55": 30,
-      "14:05": 30,
-      "15:15": 30,
-      "16:25": 30,
-      "17:35": 30,
-      "18:45": 30,
-    },
-    Viernes: {
-      "08:15": 30,
-      "09:25": 30,
-      "10:35": 30,
-      "11:45": 30,
-      "12:55": 30,
-      "14:05": 30,
-      "15:15": 30,
-      "16:25": 30,
-      "17:35": 30,
-      "18:45": 30,
-    },
-  });
+  const [cuposDisponibles, setCuposDisponibles] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
   const [confirmMessage, setConfirmMessage] = useState("");
 
-  const handleDayChange = (e) => {
-    const selectedDay = e.target.value;
-    setSelectedDay(selectedDay);
+  const handleDayChange = (date) => {
+    setSelectedDay(date);
     setSelectedHorario("");
+    setCuposDisponibles([]);
   };
 
   const handleHorarioChange = (e) => {
@@ -85,24 +26,21 @@ const RegistrarHorario = () => {
 
   const handleReservar = () => {
     if (selectedDay && selectedHorario) {
-      const updatedCupos = { ...cuposDisponibles };
-      const cuposDia = updatedCupos[selectedDay];
-      if (cuposDia && cuposDia[selectedHorario] > 0) {
-        setShowModal(true);
-        setConfirmMessage("¿Desea confirmar la reserva?");
-      }
+      setShowModal(true);
+      setConfirmMessage("¿Desea confirmar la reserva?");
     }
   };
 
   const handleConfirmReserva = () => {
-    const updatedCupos = { ...cuposDisponibles };
-    const cuposDia = updatedCupos[selectedDay];
-    if (cuposDia && cuposDia[selectedHorario] > 0) {
-      cuposDia[selectedHorario] = cuposDia[selectedHorario] - 1;
-      setCuposDisponibles(updatedCupos);
-      setShowModal(false);
-      setConfirmMessage("");
-    }
+    setCuposDisponibles((prevCupos) => {
+      const updatedCupos = [...prevCupos];
+      const newCupo = { day: selectedDay, horario: selectedHorario };
+      updatedCupos.push(newCupo);
+      return updatedCupos;
+    });
+
+    setShowModal(false);
+    setConfirmMessage("");
   };
 
   const handleCancelarReserva = () => {
@@ -111,25 +49,9 @@ const RegistrarHorario = () => {
   };
 
   const handleReiniciarCupos = () => {
-    if (selectedDay) {
-      const initialCupos = { ...cuposDisponibles };
-      initialCupos[selectedDay] = {
-        "08:15": 30,
-        "09:25": 30,
-        "10:35": 30,
-        "11:45": 30,
-        "12:55": 30,
-        "14:05": 30,
-        "15:15": 30,
-        "16:25": 30,
-        "17:35": 30,
-        "18:45": 30,
-      };
-      setCuposDisponibles(initialCupos);
-    }
+    setCuposDisponibles([]);
   };
 
-  const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
   const horarios = [
     "08:15",
     "09:25",
@@ -143,8 +65,6 @@ const RegistrarHorario = () => {
     "18:45",
   ];
 
-  const horariosDisponibles = selectedDay ? horarios : [];
-
   return (
     <div className="container">
       <br />
@@ -156,20 +76,19 @@ const RegistrarHorario = () => {
       <h2>Horarios</h2>
       <div className="form-group">
         <label>Filtrar por día:</label>
-        <select className="form-control" value={selectedDay} onChange={handleDayChange}>
-          <option value="">Todos los días</option>
-          {days.map((day) => (
-            <option key={day} value={day}>
-              {day}
-            </option>
-          ))}
-        </select>
+        <DatePicker
+          className="form-control"
+          selected={selectedDay}
+          onChange={handleDayChange}
+          dateFormat="dd/MM/yyyy"
+          placeholderText="Seleccionar día"
+        />
       </div>
       {selectedDay && (
         <>
           <br />
           <div className="row">
-            {horariosDisponibles.map((horario) => (
+            {horarios.map((horario) => (
               <div className="col-md-4" key={horario}>
                 <Card
                   className={`card ${selectedHorario === horario ? "bg-dark text-white" : ""}`}
@@ -177,9 +96,7 @@ const RegistrarHorario = () => {
                 >
                   <Card.Body>
                     <Card.Title>{horario}</Card.Title>
-                    <Card.Text>
-                      {cuposDisponibles[selectedDay][horario] || 30} cupos disponibles
-                    </Card.Text>
+                    <Card.Text>30 cupos disponibles</Card.Text>
                   </Card.Body>
                 </Card>
               </div>
@@ -188,7 +105,7 @@ const RegistrarHorario = () => {
           {selectedHorario && (
             <>
               <br />
-              <Button variant="dark" onClick={handleReservar}>
+              <Button variant="dark" onClick={handleReservar} style={{ marginRight: "10px" }}>
                 Reservar
               </Button>
               <Button variant="dark" onClick={handleReiniciarCupos}>
