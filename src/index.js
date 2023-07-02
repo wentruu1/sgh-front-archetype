@@ -11,7 +11,7 @@ import LoginPage from './routes/LoginPage';
 import RegisterPage from './routes/RegisterPage';
 import Root from './routes/Root';
 import RegistroHorario from './routes/RegistroHorario';
-
+import Buscar from './routes/Buscar';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -28,6 +28,10 @@ const router = createBrowserRouter([
       {
         path:"registrar",
         element: <RegistroHorario/>
+      },
+      {
+        path:"buscar",
+        element:<Buscar/>
       }
     ],
   },
