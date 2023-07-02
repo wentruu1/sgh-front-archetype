@@ -29,10 +29,11 @@ export default function Root() {
                   <Link to={`/login`} className="btn btn-dark me-2" style={{ padding: "8px 16px", fontSize: "14px" }}>
                     Iniciar Sesión
                   </Link>
-                  <Link to={`/register`} className="btn btn-dark" style={{ padding: "8px 16px", fontSize: "14px" }}>
+                  <Link to={`/register`} className="btn btn-dark" style={{ padding: "8px 16px", fontSize: "14px", marginRight:"10px"}}>
                     Registrar Usuario
                   </Link>
-                  <Link to={'/registrar'} className="btn btn-dark" style={{padding: "8px 16px", fontSize: "14px"}}> Registrar Horarios</Link>
+                  <Link to={'/registrar'} className="btn btn-dark" style={{padding: "8px 16px", fontSize: "14px", marginRight:"10px"}}> Registrar Horarios</Link>
+                  <Link to={'/buscar'} className="btn btn-dark" style={{padding: "8px 16px", fontSize: "14px"}}>Buscar </Link>
                 </div>
                 <div className="col text-end" style={{ paddingTop: "10px" }}>
                   <a href="https://usm.cl/"> <img src="/img/descargar.png" alt="logo" /></a> 
