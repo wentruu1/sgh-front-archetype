@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const RegistrarHorario = () => {
@@ -67,6 +70,9 @@ const RegistrarHorario = () => {
     },
   });
 
+  const [showModal, setShowModal] = useState(false);
+  const [confirmMessage, setConfirmMessage] = useState("");
+
   const handleDayChange = (e) => {
     const selectedDay = e.target.value;
     setSelectedDay(selectedDay);
@@ -82,10 +88,26 @@ const RegistrarHorario = () => {
       const updatedCupos = { ...cuposDisponibles };
       const cuposDia = updatedCupos[selectedDay];
       if (cuposDia && cuposDia[selectedHorario] > 0) {
-        cuposDia[selectedHorario] = cuposDia[selectedHorario] - 1;
-        setCuposDisponibles(updatedCupos);
+        setShowModal(true);
+        setConfirmMessage("¿Desea confirmar la reserva?");
       }
     }
+  };
+
+  const handleConfirmReserva = () => {
+    const updatedCupos = { ...cuposDisponibles };
+    const cuposDia = updatedCupos[selectedDay];
+    if (cuposDia && cuposDia[selectedHorario] > 0) {
+      cuposDia[selectedHorario] = cuposDia[selectedHorario] - 1;
+      setCuposDisponibles(updatedCupos);
+      setShowModal(false);
+      setConfirmMessage("");
+    }
+  };
+
+  const handleCancelarReserva = () => {
+    setShowModal(false);
+    setConfirmMessage("");
   };
 
   const handleReiniciarCupos = () => {
@@ -149,34 +171,52 @@ const RegistrarHorario = () => {
           <div className="row">
             {horariosDisponibles.map((horario) => (
               <div className="col-md-4" key={horario}>
-                <div
+                <Card
                   className={`card ${selectedHorario === horario ? "bg-dark text-white" : ""}`}
                   onClick={() => setSelectedHorario(horario)}
                 >
-                  <div className="card-body">
-                    <h5 className="card-title">{horario}</h5>
-                    <p className="card-text">
+                  <Card.Body>
+                    <Card.Title>{horario}</Card.Title>
+                    <Card.Text>
                       {cuposDisponibles[selectedDay][horario] || 30} cupos disponibles
-                    </p>
-                  </div>
-                </div>
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
               </div>
             ))}
           </div>
           {selectedHorario && (
             <>
               <br />
-              <button className="btn btn-dark" onClick={handleReservar}>
+              <Button variant="dark" onClick={handleReservar}>
                 Reservar
-              </button>
-              <button className="btn btn-dark" onClick={handleReiniciarCupos}>
+              </Button>
+              <Button variant="dark" onClick={handleReiniciarCupos}>
                 Reiniciar Cupos
-              </button>
+              </Button>
               <br />
             </>
           )}
         </>
       )}
+
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmación de reserva</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>{confirmMessage}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="success" onClick={handleConfirmReserva}>
+            Confirmar
+          </Button>
+          <Button variant="danger" onClick={handleCancelarReserva}>
+            Cancelar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       <br />
     </div>
   );
